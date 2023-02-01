@@ -13,7 +13,7 @@ builder.Services.AddDbContext<WorkOrderSystem.Models.DBLocalKenContext>(
                        .AddJsonFile("appsettings.json", optional: false)
                        .Build();
 
-                   var connectionString = "Data Source=localhost;Initial Catalog=DBLocalKen;Integrated Security=True;TrustServerCertificate=True";
+                   var connectionString = "Data Source=localhost;Initial Catalog=master;Integrated Security=TrueTrustServerCertificate=True";
                    options.UseSqlServer(connectionString);
                });
 var app = builder.Build();

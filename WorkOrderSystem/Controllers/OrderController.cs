@@ -54,10 +54,23 @@ namespace WorkOrderSystem.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
             return View("~/Views/Order/Index.cshtml");
+        }
+        public IActionResult Detail()
+        {
+            
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return View("~/Views/Order/Detail.cshtml");
         }
     }
 }
