@@ -1,0 +1,38 @@
+﻿@model WorkOrderSystem.Models.ViewModel
+
+<form asp-action="Save" asp-controller="Order">
+    <div>
+        @if (ViewBag.State == "Edit")
+        {
+            <p>Work Order Code</p>
+            <input id="inpWorkOrderCode" asp-for="Order.workorder_code" readonly />
+        }
+        <p>Work Title</p>
+        <input id="inpWorkTitle" asp-for="Order.work_title" />
+        <p>Requestor Name</p>
+        <input id="inpRequestorName" asp-for="Order.requestor_name"/>
+        <p>Request Date</p>
+        <input id="inpRequestDate" asp-for="Order.request_date" type="datetime-local" />
+        <p>PIC Name</p>
+        <input id="inpPICName" asp-for="Order.pic_name" />
+        <p>Completion Date</p>
+        <input id="inpCompletionDate" asp-for="Order.completionactual_date" type="datetime-local" />
+        <p>Completion Target</p>
+        <input id="inpCompletionTarget" asp-for="Order.completiontarget_date" type="datetime-local" />
+        
+        <input hidden id="hinpstate" asp-for="State" />
+    </div>
+    <div>
+        <button id="btnSave"></button>
+        <button id="btnCancel" asp-action="Index" asp-controller="Order"></button>
+    </div>
+    
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('inpRequestDate').value = now.toISOString().slice(0, 16);
+    });
+</script>

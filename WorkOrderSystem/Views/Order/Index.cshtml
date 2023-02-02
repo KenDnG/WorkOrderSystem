@@ -1,10 +1,153 @@
-﻿@*
+﻿@using WorkOrderSystem.Helper
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
+<div>
 <form method="post">
     <div>
-        <button id="btnAPICall" asp-controller="Order" asp-action="DownloadData">DownloadData</button>
-    </div>
-</form>
+        @if(ViewBag.Disable == "false")
+        {
+          <button id="btnAPICall" asp-controller="Order" asp-action="DownloadData">DownloadData</button>
+        }
+        </div>
+        <div>
+            <button id="btnAdd" asp-action="Detail" asp-controller="Order" asp-route-State="Add" >Add</button>
+        </div>
+
+ </form>
+     <div class="form-group row">
+            <table style="width:100%; font-size: 9px;" id="tblpage">
+                <thead>
+                    <tr style="background-color: #ffd951; color: #000;">
+                        <th>WO Code</th>
+                        <th>Work Title</th>
+                        <th>Requestor Name</th>
+                        <th>Request Date</th>
+                        <th>PIC Name</th>
+                        <th>Completion Date</th>
+                        <th>Completion Target</th>
+                        <th>Achievment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @{
+                    var data = ViewBag.PagingOrder; //passing from Controller
+                    var mPageSize = data.PageSize;
+                    var mPageIndex = data.PageIndex;
+                    var mTotalRecordCount = data.RecordCount;
+                    var mTotalPages = data.TotalPages;
+
+                    var dataOrder = data.Model; //passing from Controller
+                    if (mTotalRecordCount != 0)
+                    {
+                        foreach (var item in dataOrder)
+                        {
+                            var achievment = "NOT ACHIEVED";
+                                        @if(item.completionactual_date <= item.completiontarget_date)
+                            {
+                                achievment = "ACHIEVED";
+                            }
+                                        <tr>
+                                                <td>@item.workorder_code</td>
+                                                <td>@item.work_title</td>
+                                                <td>@item.requestor_name</td>
+                                                <td>@item.request_date</td>
+                                                <td>@item.pic_name</td>
+                                                <td>@item.completionactual_date</td>
+                                                <td>@item.completiontarget_date</td>
+                                               
+                                                @if(achievment == "ACHIEVED")
+                                        {
+                                                    <td><i>ACHIEVE</i></td>
+                                                
+                                        }
+                                        else
+                                        {
+                                                    <td style="background-color:red"><i>NOT ACHIEVE</i></td>
+                                            
+                                        }
+                                                
+                                                <td>
+                                                    <a class="btn btn-secondary" asp-action="Detail" asp-controller="Order" asp-route-WorkOrderCode="@item.workorder_code" asp-route-State="Edit" >Edit</a>
+                                                    <a class="btn btn-secondary" asp-action="Delete" asp-controller="Order" asp-route-WorkOrderCode="@item.workorder_code" >Delete</a>
+                                                </td>
+
+                                            </tr>
+                            }
+                        }
+                        else
+                        {
+                                        <tr>
+                                            <td><div class="text-center">Data Not Available</div></td>
+                                        </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+        <div class="form-group row">
+            @{
+                var pageSize = mPageSize;
+                var pageIndex = mPageIndex;
+                var recordCount = mTotalRecordCount;
+                var totalPages = mTotalPages;
+            }
+            <div style="padding-right:5px">
+                <button class="btn btn-secondary" id="btnprev"><i class="fa fa-arrow-left"></i> Previous</button>
+                <button class="btn btn-secondary" id="btnnext">Next <i class="fa fa-arrow-right"></i></button>
+                &nbsp;Page
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <input class="form-control" id="txpages" style="width: 60px;" type="number" />
+                    </td>
+                    <td>
+                        <div style="margin-left:6px">of &nbsp; @Commons.ConvertToNominal(@totalPages == 0 ? 1 : @totalPages)</div>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary" id="btngo" style="margin-left:10px">Go</button>
+                    </td>
+                    <td>
+                        <div style="padding-left:10px">
+                            @Commons.ConvertToNominal(@recordCount) Record(s)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnnext").click(function () {
+            txSearch = $("#txsearch").val();
+            var nextPage = parseInt($("#txpages").val()) + 1;
+            
+            if (nextPage > @totalPages) {
+                Common.Alert.Warning("The number exceeds the total page. Please enter with a lower number.");
+            }
+            else {
+                window.location.href = '@Url.Action("Index","Order")?pageIndex=' + nextPage ;
+            }
+        })
+        $("#btnprev").click(function () {
+            txSearch = $("#txsearch").val();
+            var prevPage = parseInt($("#txpages").val()) - 1;
+            window.location.href = '@Url.Action("Index","Order")?pageIndex=' + prevPage;
+        })
+        $("#btngo").click(function () {
+            txSearch = $("#txsearch").val();
+            var selectedPage = $("#txpages").val();
+            if (parseInt(selectedPage) > @totalPages) {
+                Common.Alert.Warning("The number exceeds the total page. Please enter with a lower number.");
+            } else {
+                window.location.href = '@Url.Action("Index","Order")?pageIndex=' + selectedPage;
+            }
+        })
+        $("#txpages").val(@ViewBag.CurrentPage);
+    });
+</script>

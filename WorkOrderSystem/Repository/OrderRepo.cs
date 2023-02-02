@@ -26,24 +26,41 @@ namespace WorkOrderSystem.Repository
                 return false;
             }
         }
-        public async Task<List<Order>> GetPaging()
+        public async Task<Pagination<spPagingOrderResult>> GetPaging(int PageIndex, int PageSize, int? recordCount)
         {
-            List<Order> result = new List<Order>();
+            var _PageIndex = new OutputParameter<int?> { _value = PageIndex };
+            var _PageSize = new OutputParameter<double?> { _value = PageSize };
+            var pagination = new Pagination<spPagingOrderResult>();
+            var TotalPages = new OutputParameter<int?>();
+            var RecordCount = new OutputParameter<double?> { _value = recordCount };
             try
             {
-                //result = await dblocalkencontext.Order.ToListAsync();
-                
+                List<spPagingOrderResult> result = await dblocalkencontext.GetProcedures().spPagingOrderAsync(_PageIndex, _PageSize, TotalPages, RecordCount);
+                pagination.TotalPages = Convert.ToInt32(TotalPages.Value);
+                pagination.RecordCount = Convert.ToInt32(RecordCount.Value);
+                pagination.Model = result;
+                pagination.PageIndex = PageIndex;
+                pagination.PageSize = PageSize;
+
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
-            return result;
+            return pagination;
         }
         public  async Task<bool> Insert(Order item)
         {
             try
             {
+                //generate unique workordercode
+                string biggestcode = await (from Order in dblocalkencontext.Order
+                                           orderby Order.workorder_code descending
+                                           select Order.workorder_code).FirstOrDefaultAsync();
+                int codenum =Convert.ToInt32(string.Join("",biggestcode.Where(Char.IsDigit)));
+                item.workorder_code = "WO" + (codenum + 1);
+                //save
+                item.request_date = item.request_date;
                 dblocalkencontext.Order.Add(item);
                 await dblocalkencontext.SaveChangesAsync();
                 return true;
@@ -89,12 +106,12 @@ namespace WorkOrderSystem.Repository
                 return false;
             }
         }
-        public async Task<Order> GetData(Order item)
+        public async Task<Order> GetData(string workordercode)
         {
             Order result = new Order();
             try
             {
-                result = dblocalkencontext.Order.Where(w => w.workorder_code == item.workorder_code).FirstOrDefault();
+                result = await dblocalkencontext.Order.Where(w => w.workorder_code == workordercode).FirstOrDefaultAsync();
             }
             catch (Exception)
             {

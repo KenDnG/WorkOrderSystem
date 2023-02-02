@@ -29,9 +29,13 @@
       {
          "Name": "[dbo].[WorkingTime]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[spPagingOrder]",
+         "ObjectType": 1
       }
    ],
-   "UiHint": "desktop-lhvn0k4.master.dbo",
+   "UiHint": "NB-IT124.DBLocalKen",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,

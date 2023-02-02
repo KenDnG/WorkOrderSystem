@@ -45,29 +45,29 @@ namespace WorkOrderSystem.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.workorder_code)
+                    .HasName("NewTable_PK");
+
+                entity.Property(e => e.workorder_code)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.completionactual_date).HasColumnType("datetime");
 
                 entity.Property(e => e.completiontarget_date).HasColumnType("datetime");
 
                 entity.Property(e => e.pic_name)
-                    .HasMaxLength(50)
+                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.request_date).HasColumnType("datetime");
 
                 entity.Property(e => e.requestor_name)
-                    .HasMaxLength(50)
+                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.work_title)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.workorder_code)
-                    .IsRequired()
-                    .HasMaxLength(50)
+                    .HasMaxLength(100)
                     .IsUnicode(false);
             });
 
@@ -93,6 +93,7 @@ namespace WorkOrderSystem.Models
                 entity.Property(e => e.start_date).HasColumnType("datetime");
             });
 
+            OnModelCreatingGeneratedProcedures(modelBuilder);
             OnModelCreatingPartial(modelBuilder);
         }
 
